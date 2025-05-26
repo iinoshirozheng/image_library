@@ -34,7 +34,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: docker-images-v1
-          name: "Docker Images Release v1"
+          name: "Docker Images Release"
           files: |
             docker_images/redis-7.2.tar.gz
             docker_images/ubi8-minimal.tar.gz
