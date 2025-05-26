@@ -1,8 +1,7 @@
 name: Save Docker Images to Repo
 
 on:
-  push:
-    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   save-and-commit:
@@ -11,12 +10,11 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-        with:
-          persist-credentials: true  # 允許後續 commit
 
       - name: 安裝 podman
         run: |
-          yum install -y podman git
+          sudo apt update
+          sudo apt install -y podman
 
       - name: 拉取映像
         run: |
