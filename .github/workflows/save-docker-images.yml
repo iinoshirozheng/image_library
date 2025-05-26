@@ -1,7 +1,8 @@
 name: Save Docker Images and Upload to Release
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [ "main" ]
 
 jobs:
   save-and-release:
@@ -29,21 +30,15 @@ jobs:
           podman save registry.access.redhat.com/ubi8/ubi-minimal:latest | gzip > docker_images/ubi8-minimal.tar.gz
           podman save registry.k8s.io/pause:3.9 | gzip > docker_images/k8s-pause.tar.gz
 
-      - name: 建立 Release（若不存在）
-        id: create_release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: docker-images-v1
-          name: "Docker Images Release v1"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: 上傳 Docker Images 到 Release
+      - name: 建立或更新 Release 並上傳檔案
         uses: softprops/action-gh-release@v1
         with:
           tag_name: docker-images-v1
           name: "Docker Images Release v1"
           files: |
-            docker_images/*.tar.gz
+            docker_images/redis-7.2.tar.gz
+            docker_images/ubi8-minimal.tar.gz
+            docker_images/k8s-pause.tar.gz
+          fail_on_unmatched_files: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
