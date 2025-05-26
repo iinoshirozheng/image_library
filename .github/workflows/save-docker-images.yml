@@ -1,7 +1,12 @@
 name: Save Docker Images to Repo
 
 on:
+  push:
+    branches: [ "main" ]
   workflow_dispatch:
+
+permissions:
+  contents: write  # ✅ 讓 workflow 有 push 權限
 
 jobs:
   save-and-commit:
@@ -10,6 +15,8 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true  # ✅ 用 GITHUB_TOKEN 登入
 
       - name: 安裝 podman
         run: |
@@ -34,5 +41,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add docker_images/*.tar
-          git commit -m "chore: add docker image tarballs"
+          git commit -m "chore: add docker image tarballs" || echo "No changes"
           git push origin HEAD:main
