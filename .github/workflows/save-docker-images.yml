@@ -41,4 +41,4 @@ jobs:
             docker_images/k8s-pause.tar.gz
           fail_on_unmatched_files: false
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
