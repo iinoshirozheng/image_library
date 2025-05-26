@@ -1,27 +1,20 @@
-name: Save Docker Images to Repo
+name: Save Docker Images and Upload to Release
 
 on:
-  push:
-    branches: [ "main" ]
   workflow_dispatch:
 
-permissions:
-  contents: write  # ✅ 讓 workflow 有 push 權限
-
 jobs:
-  save-and-commit:
+  save-and-release:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-        with:
-          persist-credentials: true  # ✅ 用 GITHUB_TOKEN 登入
 
       - name: 安裝 podman
         run: |
           sudo apt update
-          sudo apt install -y podman
+          sudo apt install -y podman gzip
 
       - name: 拉取映像
         run: |
@@ -29,17 +22,28 @@ jobs:
           podman pull registry.access.redhat.com/ubi8/ubi-minimal:latest
           podman pull registry.k8s.io/pause:3.9
 
-      - name: 儲存為 .tar
+      - name: 儲存並壓縮為 .tar.gz
         run: |
           mkdir -p docker_images
-          podman save -o docker_images/redis-7.2.tar docker.io/redis:7.2
-          podman save -o docker_images/ubi8-minimal.tar registry.access.redhat.com/ubi8/ubi-minimal:latest
-          podman save -o docker_images/k8s-pause.tar registry.k8s.io/pause:3.9
+          podman save docker.io/redis:7.2 | gzip > docker_images/redis-7.2.tar.gz
+          podman save registry.access.redhat.com/ubi8/ubi-minimal:latest | gzip > docker_images/ubi8-minimal.tar.gz
+          podman save registry.k8s.io/pause:3.9 | gzip > docker_images/k8s-pause.tar.gz
 
-      - name: Commit 到 Repo
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docker_images/*.tar
-          git commit -m "chore: add docker image tarballs" || echo "No changes"
-          git push origin HEAD:main
+      - name: 建立 Release（若不存在）
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: docker-images-v1
+          name: "Docker Images Release v1"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 上傳 Docker Images 到 Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: docker-images-v1
+          name: "Docker Images Release v1"
+          files: |
+            docker_images/*.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
