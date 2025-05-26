@@ -1,8 +1,7 @@
 name: Save Docker Images to Repo
 
 on:
-  push:
-    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   save-and-commit:
