@@ -1,0 +1,41 @@
+name: Save Docker Images to Repo
+
+on:
+  workflow_dispatch:
+
+jobs:
+  save-and-commit:
+    runs-on: ubuntu-latest
+    container:
+      image: registry.access.redhat.com/ubi8/ubi:latest
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true  # 允許後續 commit
+
+      - name: 安裝 podman
+        run: |
+          yum install -y podman git
+
+      - name: 拉取映像
+        run: |
+          podman pull docker.io/redis:7.2
+          podman pull registry.access.redhat.com/ubi8/ubi-minimal:latest
+          podman pull registry.k8s.io/pause:3.9
+
+      - name: 儲存為 .tar
+        run: |
+          mkdir -p docker_images
+          podman save -o docker_images/redis-7.2.tar docker.io/redis:7.2
+          podman save -o docker_images/ubi8-minimal.tar registry.access.redhat.com/ubi8/ubi-minimal:latest
+          podman save -o docker_images/k8s-pause.tar registry.k8s.io/pause:3.9
+
+      - name: Commit 到 Repo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docker_images/*.tar
+          git commit -m "chore: add docker image tarballs"
+          git push origin HEAD:main
