@@ -7,8 +7,6 @@ on:
 jobs:
   save-and-commit:
     runs-on: ubuntu-latest
-    container:
-      image: registry.access.redhat.com/ubi8/ubi:latest
 
     steps:
       - name: Checkout Repo
