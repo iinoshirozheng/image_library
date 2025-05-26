@@ -21,6 +21,7 @@ jobs:
         run: |
           podman pull docker.io/redis:7.2
           podman pull registry.access.redhat.com/ubi8/ubi-minimal:latest
+          podman pull registry.access.redhat.com/ubi9/ubi-minimal:latest
           podman pull registry.k8s.io/pause:3.9
 
       - name: 儲存並壓縮為 .tar.gz
@@ -28,6 +29,7 @@ jobs:
           mkdir -p docker_images
           podman save docker.io/redis:7.2 | gzip > docker_images/redis-7.2.tar.gz
           podman save registry.access.redhat.com/ubi8/ubi-minimal:latest | gzip > docker_images/ubi8-minimal.tar.gz
+          podman save registry.access.redhat.com/ubi9/ubi-minimal:latest | gzip > docker_images/ubi9-minimal.tar.gz
           podman save registry.k8s.io/pause:3.9 | gzip > docker_images/k8s-pause.tar.gz
 
       - name: 建立或更新 Release 並上傳檔案
@@ -38,6 +40,7 @@ jobs:
           files: |
             docker_images/redis-7.2.tar.gz
             docker_images/ubi8-minimal.tar.gz
+            docker_images/ubi9-minimal.tar.gz
             docker_images/k8s-pause.tar.gz
           fail_on_unmatched_files: false
         env:
