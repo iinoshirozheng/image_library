@@ -21,6 +21,7 @@ jobs:
           docker pull registry.access.redhat.com/ubi8/ubi-minimal:latest
           docker pull registry.access.redhat.com/ubi9/ubi-minimal:latest
           docker pull registry.k8s.io/pause:3.9
+          docker pull k8s.gcr.io/pause:3.2
 
       - name: 儲存為 .tar 文件
         run: |
@@ -28,7 +29,8 @@ jobs:
           docker save docker.io/library/redis:7.2 > docker_images/redis-7.2.tar
           docker save registry.access.redhat.com/ubi8/ubi-minimal:latest > docker_images/ubi8-minimal.tar
           docker save registry.access.redhat.com/ubi9/ubi-minimal:latest > docker_images/ubi9-minimal.tar
-          docker save registry.k8s.io/pause:3.9 > docker_images/k8s-pause.tar
+          docker save registry.k8s.io/pause:3.9 > docker_images/k8s-pause-3.9.tar
+          docker save k8s.gcr.io/pause:3.2 > docker_images/k8s-pause-3.2.tar
 
       - name: 建立或更新 Release 並上傳檔案
         uses: softprops/action-gh-release@v1
@@ -39,7 +41,8 @@ jobs:
             docker_images/redis-7.2.tar
             docker_images/ubi8-minimal.tar
             docker_images/ubi9-minimal.tar
-            docker_images/k8s-pause.tar
+            docker_images/k8s-pause-3.9.tar
+            docker_images/k8s-pause-3.2.tar
           fail_on_unmatched_files: false
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
