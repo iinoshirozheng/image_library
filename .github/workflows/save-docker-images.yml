@@ -17,7 +17,7 @@ jobs:
 
       - name: 拉取映像
         run: |
-          docker pull docker.io/redis:7.2
+          docker pull docker.io/library/redis:7.2
           docker pull registry.access.redhat.com/ubi8/ubi-minimal:latest
           docker pull registry.access.redhat.com/ubi9/ubi-minimal:latest
           docker pull registry.k8s.io/pause:3.9
