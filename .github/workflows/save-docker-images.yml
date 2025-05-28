@@ -22,6 +22,7 @@ jobs:
           docker pull registry.access.redhat.com/ubi9/ubi-minimal:latest
           docker pull registry.k8s.io/pause:3.9
           docker pull k8s.gcr.io/pause:3.2
+          docker pull registry.redhat.io/gcc:11
 
       - name: 儲存為 .tar 文件
         run: |
@@ -31,6 +32,7 @@ jobs:
           docker save registry.access.redhat.com/ubi9/ubi-minimal:latest > docker_images/ubi9-minimal.tar
           docker save registry.k8s.io/pause:3.9 > docker_images/k8s-pause-3.9.tar
           docker save k8s.gcr.io/pause:3.2 > docker_images/k8s-pause-3.2.tar
+          docker save registry.redhat.io/gcc:11 > docker_images/radhat-gcc11.tar
 
       - name: 建立或更新 Release 並上傳檔案
         uses: softprops/action-gh-release@v1
@@ -43,6 +45,7 @@ jobs:
             docker_images/ubi9-minimal.tar
             docker_images/k8s-pause-3.9.tar
             docker_images/k8s-pause-3.2.tar
+            docker_images/radhat-gcc11.tar
           fail_on_unmatched_files: false
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
