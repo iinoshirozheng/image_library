@@ -18,6 +18,7 @@ jobs:
       - name: 拉取映像
         run: |
           docker pull docker.io/library/redis:7.2
+          docker pull docker.io/library/redis:7.2-alpine
           docker pull registry.access.redhat.com/ubi8/ubi-minimal:latest
           docker pull registry.access.redhat.com/ubi9/ubi-minimal:latest
           docker pull docker.io/library/gcc:11
@@ -26,6 +27,7 @@ jobs:
         run: |
           mkdir -p docker_images
           docker save docker.io/library/redis:7.2 > docker_images/redis-7.2.tar
+          docker save docker.io/library/redis:7.2-alpine > docker_images/redis-7.2.tar-alpine.tar
           docker save registry.access.redhat.com/ubi8/ubi-minimal:latest > docker_images/ubi8-minimal.tar
           docker save registry.access.redhat.com/ubi9/ubi-minimal:latest > docker_images/ubi9-minimal.tar
           docker save docker.io/library/gcc:11 > docker_images/radhat-gcc11.tar
@@ -37,6 +39,7 @@ jobs:
           name: "Docker Images Release"
           files: |
             docker_images/redis-7.2.tar
+            docker_images/redis-7.2.tar-alpine.tar
             docker_images/ubi8-minimal.tar
             docker_images/ubi9-minimal.tar
             docker_images/radhat-gcc11.tar
