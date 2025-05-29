@@ -19,8 +19,8 @@ jobs:
         run: |
           docker pull docker.io/library/redis:7.2
           docker pull docker.io/library/redis:7.2-alpine
-          docker pull registry.access.redhat.com/ubi8/ubi-minimal:latest
           docker pull registry.access.redhat.com/ubi9/ubi-minimal:latest
+          docker pull registry.access.redhat.com/ubi9/gcc-toolset-11
           docker pull docker.io/library/gcc:11
 
       - name: 儲存為 .tar 文件
@@ -28,9 +28,9 @@ jobs:
           mkdir -p docker_images
           docker save docker.io/library/redis:7.2 > docker_images/redis-7.2.tar
           docker save docker.io/library/redis:7.2-alpine > docker_images/redis-7.2.tar-alpine.tar
-          docker save registry.access.redhat.com/ubi8/ubi-minimal:latest > docker_images/ubi8-minimal.tar
-          docker save registry.access.redhat.com/ubi9/ubi-minimal:latest > docker_images/ubi9-minimal.tar
-          docker save docker.io/library/gcc:11 > docker_images/radhat-gcc11.tar
+          docker save registry.access.redhat.com/ubi9/ubi-minimal:latest > docker_images/radhat-ubi9-minimal.tar
+          docker save registry.access.redhat.com/ubi9/gcc-toolset-11 > docker_images/radhat-ubi9-11.tar
+          docker save docker.io/library/gcc:11 > docker_images/docker-gcc11.tar
 
       - name: 建立或更新 Release 並上傳檔案
         uses: softprops/action-gh-release@v1
@@ -40,9 +40,9 @@ jobs:
           files: |
             docker_images/redis-7.2.tar
             docker_images/redis-7.2.tar-alpine.tar
-            docker_images/ubi8-minimal.tar
-            docker_images/ubi9-minimal.tar
-            docker_images/radhat-gcc11.tar
+            docker_images/radhat-ubi9-minimal.tar
+            docker_images/radhat-ubi9-11.tar
+            docker_images/docker-gcc11.tar
           fail_on_unmatched_files: false
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
