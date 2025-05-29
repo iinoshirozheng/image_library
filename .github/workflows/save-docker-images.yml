@@ -19,18 +19,17 @@ jobs:
         run: |
           docker pull docker.io/library/redis:7.2
           docker pull docker.io/library/redis:7.2-alpine
-          docker pull quay.io/redhat/ubi9-minimal:latest
-          docker pull quay.io/ubi9/gcc-toolset-11
-          docker pull docker.io/library/gcc:11
+          docker pull registry.access.redhat.com/ubi9/ubi-minimal:latest
+          docker pull registry.access.redhat.com/ubi9/ubi:latest
 
       - name: 儲存為 .tar 文件
         run: |
           mkdir -p docker_images
           docker save docker.io/library/redis:7.2 > docker_images/redis-7.2.tar
           docker save docker.io/library/redis:7.2-alpine > docker_images/redis-7.2.tar-alpine.tar
-          docker save quay.io/redhat/ubi9-minimal:latest > docker_images/radhat-ubi9-minimal.tar
+          docker save registry.access.redhat.com/ubi9/ubi-minimal:latest > docker_images/radhat-ubi9-minimal.tar
+          docker save registry.access.redhat.com/ubi9/ubi:latest > docker_images/radhat-ubi9-minimal.tar
           docker save quay.io/ubi9/gcc-toolset-11 > docker_images/radhat-ubi9-11.tar
-          docker save docker.io/library/gcc:11 > docker_images/docker-gcc11.tar
 
       - name: 建立或更新 Release 並上傳檔案
         uses: softprops/action-gh-release@v1
