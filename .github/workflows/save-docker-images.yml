@@ -19,14 +19,17 @@ jobs:
         run: |
           docker pull docker.io/library/redis:7.2
           docker pull docker.io/library/redis:7.2-alpine
+          docker pull docker.io/redis/redis-stack-server:latest
           docker pull registry.access.redhat.com/ubi9/ubi-minimal:latest
           docker pull registry.access.redhat.com/ubi9/ubi:latest
+
 
       - name: 儲存為 .tar 文件
         run: |
           mkdir -p docker_images
           docker save docker.io/library/redis:7.2 > docker_images/redis-7.2.tar
           docker save docker.io/library/redis:7.2-alpine > docker_images/redis-7.2-alpine.tar
+          docker save docker.io/redis/redis-stack-server:latest > docker_images/redis-stack-server.tar
           docker save registry.access.redhat.com/ubi9/ubi-minimal:latest > docker_images/radhat-ubi9-minimal.tar
           docker save registry.access.redhat.com/ubi9/ubi:latest > docker_images/radhat-ubi9.tar
 
@@ -38,6 +41,7 @@ jobs:
           files: |
             docker_images/redis-7.2.tar
             docker_images/redis-7.2-alpine.tar
+            docker_images/redis-stack-server.tar
             docker_images/radhat-ubi9-minimal.tar
             docker_images/radhat-ubi9.tar
           fail_on_unmatched_files: false
