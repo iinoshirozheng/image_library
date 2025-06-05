@@ -12,17 +12,24 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
-      - name: 安裝 Docker
+      - name: 安裝 Docker Buildx (用於 docker build)
         uses: docker/setup-buildx-action@v3
 
-      - name: 拉取映像
+      - name: 拉取其他映像檔
         run: |
           docker pull docker.io/library/redis:7.2
           docker pull docker.io/library/redis:7.2-alpine
           docker pull docker.io/redis/redis-stack-server:latest
-          docker pull registry.access.redhat.com/ubi9/ubi-minimal:latest
+          # ubi9/ubi-minimal 將會作為基礎映像檔來建置，無需在此單獨拉取以供儲存
           docker pull registry.access.redhat.com/ubi9/ubi:latest
 
+      - name: 建置帶有 TZ 設定的 ubi-minimal 映像檔
+        run: |
+          # 假設 Dockerfile.ubi-minimal-tz 位於儲存庫的 .github/dockerfiles/ 目錄下
+          # 如果您將 Dockerfile 放在其他位置，請相應修改 -f 後的路徑
+          docker build -t ubi-minimal-with-tz -f .github/dockerfiles/Dockerfile.ubi-minimal-tz .
+          # 如果 Dockerfile.ubi-minimal-tz 就在根目錄，則使用：
+          # docker build -t ubi-minimal-with-tz -f Dockerfile.ubi-minimal-tz .
 
       - name: 儲存為 .tar 文件
         run: |
@@ -30,13 +37,13 @@ jobs:
           docker save docker.io/library/redis:7.2 > docker_images/redis-7.2.tar
           docker save docker.io/library/redis:7.2-alpine > docker_images/redis-7.2-alpine.tar
           docker save docker.io/redis/redis-stack-server:latest > docker_images/redis-stack-server.tar
-          docker save registry.access.redhat.com/ubi9/ubi-minimal:latest > docker_images/radhat-ubi9-minimal.tar
+          docker save ubi-minimal-with-tz > docker_images/radhat-ubi9-minimal.tar # 儲存新建置的映像檔
           docker save registry.access.redhat.com/ubi9/ubi:latest > docker_images/radhat-ubi9.tar
 
       - name: 建立或更新 Release 並上傳檔案
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: docker-images-v1
+          tag_name: docker-images-v1 # 建議使用更動態的標籤，例如基於日期或 commit SHA
           name: "Docker Images Release"
           files: |
             docker_images/redis-7.2.tar
@@ -44,6 +51,6 @@ jobs:
             docker_images/redis-stack-server.tar
             docker_images/radhat-ubi9-minimal.tar
             docker_images/radhat-ubi9.tar
-          fail_on_unmatched_files: false
+          fail_on_unmatched_files: false # 如果希望在某個檔案遺失時失敗，可以設為 true
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
