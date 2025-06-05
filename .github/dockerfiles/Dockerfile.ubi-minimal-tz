@@ -1,0 +1,10 @@
+# .github/dockerfiles/Dockerfile.ubi-minimal-tz (或者您可以放在根目錄，相應調整 workflow 中的路徑)
+FROM registry.access.redhat.com/ubi9/ubi-minimal:latest
+
+# ubi-minimal 通常不包含完整的時區資料，所以需要安裝 tzdata
+# 同時更新包列表是個好習慣
+RUN microdnf update -y && \
+    microdnf install -y tzdata && \
+    microdnf clean all
+
+ENV TZ="Asia/Taipei"
